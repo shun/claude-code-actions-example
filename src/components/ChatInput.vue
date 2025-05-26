@@ -11,7 +11,7 @@ const isComposing = ref(false)
 
 const sendMessage = () => {
   if (message.value.trim() && !isComposing.value) {
-    emit('send-message', message.value)
+    emit('send-message', message.value.trim())
     message.value = ''
     resetTextareaHeight()
   }
