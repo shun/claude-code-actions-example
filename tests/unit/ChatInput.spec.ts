@@ -190,12 +190,22 @@ describe('ChatInput', () => {
   })
 
   it('handles input event and adjusts height', async () => {
-    const handleInputSpy = vi.spyOn(wrapper.vm, 'handleInput')
-    
     const textarea = wrapper.find('.message-input')
-    await textarea.trigger('input')
     
-    expect(handleInputSpy).toHaveBeenCalled()
+    // Mock scrollHeight property
+    Object.defineProperty(textarea.element, 'scrollHeight', {
+      value: 60,
+      writable: true
+    })
+    
+    // Set initial height
+    textarea.element.style.height = '20px'
+    
+    await textarea.trigger('input')
+    await wrapper.vm.$nextTick()
+    
+    // Verify height was adjusted (should be min of scrollHeight and maxHeight 120px)
+    expect(textarea.element.style.height).toBe('60px')
   })
 
   it('has correct textarea attributes', () => {
