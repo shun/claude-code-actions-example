@@ -1,51 +1,51 @@
 <script setup lang="ts">
-import { ref, type Ref } from 'vue'
-import ChatMessage from './ChatMessage.vue'
-import ChatInput from './ChatInput.vue'
-import ModelSelector from './ModelSelector.vue'
+import { ref, type Ref } from "vue";
+import ChatMessage from "./ChatMessage.vue";
+import ChatInput from "./ChatInput.vue";
+import ModelSelector from "./ModelSelector.vue";
 
 interface Message {
-  id: string
-  content: string
-  sender: 'user' | 'ai'
-  timestamp: Date
+  id: string;
+  content: string;
+  sender: "user" | "ai";
+  timestamp: Date;
 }
 
-const messages: Ref<Message[]> = ref([])
-const selectedModel = ref('openai')
-const isTyping = ref(false)
+const messages: Ref<Message[]> = ref([]);
+const selectedModel = ref("openai");
+const isTyping = ref(false);
 
 const sendMessage = async (content: string) => {
-  if (!content.trim()) return
+  if (!content.trim()) return;
 
   // Add user message
   const userMessage: Message = {
     id: Date.now().toString(),
     content: content.trim(),
-    sender: 'user',
-    timestamp: new Date()
-  }
-  messages.value.push(userMessage)
+    sender: "user",
+    timestamp: new Date(),
+  };
+  messages.value.push(userMessage);
 
   // Show typing indicator
-  isTyping.value = true
+  isTyping.value = true;
 
   // Simulate AI response (placeholder for future API integration)
   setTimeout(() => {
     const aiMessage: Message = {
       id: (Date.now() + 1).toString(),
       content: `Response from ${selectedModel.value}: ${content}`,
-      sender: 'ai',
-      timestamp: new Date()
-    }
-    messages.value.push(aiMessage)
-    isTyping.value = false
-  }, 1000)
-}
+      sender: "ai",
+      timestamp: new Date(),
+    };
+    messages.value.push(aiMessage);
+    isTyping.value = false;
+  }, 1000);
+};
 
 const clearChat = () => {
-  messages.value = []
-}
+  messages.value = [];
+};
 </script>
 
 <template>
@@ -57,7 +57,7 @@ const clearChat = () => {
         <button @click="clearChat" class="clear-btn">Clear</button>
       </div>
     </div>
-    
+
     <div class="chat-messages">
       <ChatMessage
         v-for="message in messages"
@@ -73,7 +73,7 @@ const clearChat = () => {
         </div>
       </div>
     </div>
-    
+
     <ChatInput @send-message="sendMessage" />
   </div>
 </template>
@@ -164,7 +164,9 @@ const clearChat = () => {
 }
 
 @keyframes typing {
-  0%, 80%, 100% {
+  0%,
+  80%,
+  100% {
     transform: scale(0);
   }
   40% {
@@ -177,7 +179,7 @@ const clearChat = () => {
     height: 100vh;
     border-radius: 0;
   }
-  
+
   .chat-header {
     border-radius: 0;
   }
