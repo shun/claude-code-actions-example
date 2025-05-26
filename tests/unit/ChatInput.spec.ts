@@ -190,7 +190,7 @@ describe('ChatInput', () => {
   })
 
   it('handles input event and adjusts height', async () => {
-    const handleInputSpy = vi.spyOn(wrapper.vm, 'handleInput')
+    const adjustHeightSpy = vi.spyOn(wrapper.vm, 'adjustTextareaHeight')
     
     const textarea = wrapper.find('.message-input')
     await textarea.trigger('input')
@@ -198,7 +198,7 @@ describe('ChatInput', () => {
     // Need to wait for nextTick
     await wrapper.vm.$nextTick()
     
-    expect(handleInputSpy).toHaveBeenCalled()
+    expect(adjustHeightSpy).toHaveBeenCalled()
   })
 
   it('has correct textarea attributes', () => {
@@ -224,10 +224,7 @@ describe('ChatInput', () => {
     it('has proper focus management', async () => {
       const textarea = wrapper.find('.message-input')
       
-      // Manually set focus since jsdom doesn't handle focus events properly
-      textarea.element.focus()
-      
-      // Should be focusable
+      // Should be focusable (check element properties)
       expect(textarea.element.tagName).toBe('TEXTAREA')
       expect(textarea.attributes('tabindex')).not.toBe('-1')
     })
