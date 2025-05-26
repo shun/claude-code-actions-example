@@ -4,6 +4,7 @@ import ChatInterface from "@/components/ChatInterface.vue";
 import ChatMessage from "@/components/ChatMessage.vue";
 import ChatInput from "@/components/ChatInput.vue";
 import ModelSelector from "@/components/ModelSelector.vue";
+import SettingsModal from "@/components/SettingsModal.vue";
 
 // Mock the child components to isolate ChatInterface testing
 vi.mock("@/components/ChatMessage.vue", () => ({
@@ -32,6 +33,19 @@ vi.mock("@/components/ModelSelector.vue", () => ({
   },
 }));
 
+vi.mock("@/components/SettingsModal.vue", () => ({
+  default: {
+    name: "SettingsModal",
+    props: ["isOpen"],
+    emits: ["close"],
+    template: '<div class="settings-modal-mock" v-if="isOpen">Settings Modal</div>',
+  },
+}));
+
+vi.mock("@/services/geminiApi", () => ({
+  sendGeminiMessage: vi.fn(),
+}));
+
 describe("ChatInterface", () => {
   let wrapper: VueWrapper<any>;
 
@@ -51,6 +65,7 @@ describe("ChatInterface", () => {
       true
     );
     expect(wrapper.findComponent({ name: "ChatInput" }).exists()).toBe(true);
+    expect(wrapper.findComponent({ name: "SettingsModal" }).exists()).toBe(true);
   });
 
   it("starts with empty messages", () => {
@@ -120,5 +135,36 @@ describe("ChatInterface", () => {
 
     // Should not add any messages
     expect(wrapper.findAllComponents({ name: "ChatMessage" })).toHaveLength(0);
+  });
+
+  it("renders settings button", () => {
+    expect(wrapper.find(".settings-btn").exists()).toBe(true);
+  });
+
+  it("opens settings modal when settings button is clicked", async () => {
+    const settingsModal = wrapper.findComponent({ name: "SettingsModal" });
+    expect(settingsModal.props("isOpen")).toBe(false);
+
+    await wrapper.find(".settings-btn").trigger("click");
+    
+    expect(settingsModal.props("isOpen")).toBe(true);
+  });
+
+  it("closes settings modal when close event is emitted", async () => {
+    // First open the modal
+    await wrapper.find(".settings-btn").trigger("click");
+    
+    const settingsModal = wrapper.findComponent({ name: "SettingsModal" });
+    expect(settingsModal.props("isOpen")).toBe(true);
+
+    // Emit close event
+    await settingsModal.vm.$emit("close");
+    
+    expect(settingsModal.props("isOpen")).toBe(false);
+  });
+
+  it("starts with settings modal closed", () => {
+    const settingsModal = wrapper.findComponent({ name: "SettingsModal" });
+    expect(settingsModal.props("isOpen")).toBe(false);
   });
 });

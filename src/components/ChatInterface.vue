@@ -3,6 +3,8 @@ import { ref, type Ref } from "vue";
 import ChatMessage from "./ChatMessage.vue";
 import ChatInput from "./ChatInput.vue";
 import ModelSelector from "./ModelSelector.vue";
+import SettingsModal from "./SettingsModal.vue";
+import { sendGeminiMessage } from "@/services/geminiApi";
 
 interface Message {
   id: string;
@@ -14,6 +16,7 @@ interface Message {
 const messages: Ref<Message[]> = ref([]);
 const selectedModel = ref("openai");
 const isTyping = ref(false);
+const isSettingsOpen = ref(false);
 
 const sendMessage = async (content: string) => {
   if (!content.trim()) return;
@@ -30,21 +33,48 @@ const sendMessage = async (content: string) => {
   // Show typing indicator
   isTyping.value = true;
 
-  // Simulate AI response (placeholder for future API integration)
-  setTimeout(() => {
+  try {
+    let responseContent = "";
+
+    if (selectedModel.value === "gemini") {
+      const response = await sendGeminiMessage(content.trim());
+      responseContent = response.content;
+    } else {
+      // Simulate other AI responses (placeholder for future API integration)
+      await new Promise(resolve => setTimeout(resolve, 1000));
+      responseContent = `Response from ${selectedModel.value}: ${content}`;
+    }
+
     const aiMessage: Message = {
       id: (Date.now() + 1).toString(),
-      content: `Response from ${selectedModel.value}: ${content}`,
+      content: responseContent,
       sender: "ai",
       timestamp: new Date(),
     };
     messages.value.push(aiMessage);
+  } catch (error) {
+    const errorMessage: Message = {
+      id: (Date.now() + 1).toString(),
+      content: `Error: ${error instanceof Error ? error.message : 'Unknown error occurred'}`,
+      sender: "ai",
+      timestamp: new Date(),
+    };
+    messages.value.push(errorMessage);
+  } finally {
     isTyping.value = false;
-  }, 1000);
+  }
 };
 
 const clearChat = () => {
   messages.value = [];
+};
+
+const openSettings = () => {
+  isSettingsOpen.value = true;
+};
+
+const closeSettings = () => {
+  isSettingsOpen.value = false;
 };
 </script>
 
@@ -54,6 +84,15 @@ const clearChat = () => {
       <h2>Chat with AI</h2>
       <div class="header-controls">
         <ModelSelector v-model="selectedModel" />
+        <button @click="openSettings" class="settings-btn">
+          <svg viewBox="0 0 20 20" fill="currentColor">
+            <path
+              fill-rule="evenodd"
+              d="M11.49 3.17c-.38-1.56-2.6-1.56-2.98 0a1.532 1.532 0 01-2.286.948c-1.372-.836-2.942.734-2.106 2.106.54.886.061 2.042-.947 2.287-1.561.379-1.561 2.6 0 2.978a1.532 1.532 0 01.947 2.287c-.836 1.372.734 2.942 2.106 2.106a1.532 1.532 0 012.287.947c.379 1.561 2.6 1.561 2.978 0a1.533 1.533 0 012.287-.947c1.372.836 2.942-.734 2.106-2.106a1.533 1.533 0 01.947-2.287c1.561-.379 1.561-2.6 0-2.978a1.532 1.532 0 01-.947-2.287c.836-1.372-.734-2.942-2.106-2.106a1.532 1.532 0 01-2.287-.947zM10 13a3 3 0 100-6 3 3 0 000 6z"
+              clip-rule="evenodd"
+            />
+          </svg>
+        </button>
         <button @click="clearChat" class="clear-btn">Clear</button>
       </div>
     </div>
@@ -75,6 +114,8 @@ const clearChat = () => {
     </div>
 
     <ChatInput @send-message="sendMessage" />
+
+    <SettingsModal :is-open="isSettingsOpen" @close="closeSettings" />
   </div>
 </template>
 
@@ -109,6 +150,27 @@ const clearChat = () => {
   display: flex;
   gap: 1rem;
   align-items: center;
+}
+
+.settings-btn {
+  padding: 0.5rem;
+  background: #6b7280;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.settings-btn:hover {
+  background: #4b5563;
+}
+
+.settings-btn svg {
+  width: 16px;
+  height: 16px;
 }
 
 .clear-btn {
