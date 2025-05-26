@@ -1,21 +1,21 @@
 <script setup lang="ts">
 interface Message {
-  id: string
-  content: string
-  sender: 'user' | 'ai'
-  timestamp: Date
+  id: string;
+  content: string;
+  sender: "user" | "ai";
+  timestamp: Date;
 }
 
 defineProps<{
-  message: Message
-}>()
+  message: Message;
+}>();
 
 const formatTime = (date: Date) => {
-  return date.toLocaleTimeString('ja-JP', { 
-    hour: '2-digit', 
-    minute: '2-digit' 
-  })
-}
+  return date.toLocaleTimeString("ja-JP", {
+    hour: "2-digit",
+    minute: "2-digit",
+  });
+};
 </script>
 
 <template>
@@ -26,7 +26,7 @@ const formatTime = (date: Date) => {
         <span v-else>AI</span>
       </div>
     </div>
-    
+
     <div class="message-content">
       <div class="message-bubble" :class="[`bubble--${message.sender}`]">
         <p class="message-text">{{ message.content }}</p>
@@ -125,13 +125,13 @@ const formatTime = (date: Date) => {
   .message-bubble {
     max-width: 85%;
   }
-  
+
   .avatar {
     width: 28px;
     height: 28px;
     font-size: 0.7rem;
   }
-  
+
   .message-text {
     font-size: 0.875rem;
   }

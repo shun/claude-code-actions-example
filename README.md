@@ -8,7 +8,7 @@ Learn more about the recommended Project Setup and IDE Support in the [Vue Docs 
 
 ```bash
 npm run dev    # Start development server
-npm run build  # Build for production  
+npm run build  # Build for production
 npm run preview # Preview production build
 ```
 
@@ -21,6 +21,7 @@ npm run test   # Run unit tests
 ```
 
 ### Test Structure
+
 - Test files are located in `tests/unit/`
 - Test files should follow the naming convention `*.spec.ts` or `*.test.ts`
 - The testing environment is configured with jsdom for DOM simulation

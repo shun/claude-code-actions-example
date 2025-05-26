@@ -1,44 +1,48 @@
 <script setup lang="ts">
-import { ref, computed } from 'vue'
+import { ref, computed } from "vue";
 
 const props = defineProps<{
-  modelValue: string
-}>()
+  modelValue: string;
+}>();
 
 const emit = defineEmits<{
-  'update:modelValue': [value: string]
-}>()
+  "update:modelValue": [value: string];
+}>();
 
 const models = [
-  { value: 'openai', label: 'OpenAI GPT', description: 'GPT-4 and GPT-3.5' },
-  { value: 'claude', label: 'Anthropic Claude', description: 'Claude 3 family' },
-  { value: 'gemini', label: 'Google Gemini', description: 'Gemini Pro' }
-]
+  { value: "openai", label: "OpenAI GPT", description: "GPT-4 and GPT-3.5" },
+  {
+    value: "claude",
+    label: "Anthropic Claude",
+    description: "Claude 3 family",
+  },
+  { value: "gemini", label: "Google Gemini", description: "Gemini Pro" },
+];
 
-const isOpen = ref(false)
+const isOpen = ref(false);
 
 const selectedModel = computed(() => {
-  return models.find(model => model.value === props.modelValue) || models[0]
-})
+  return models.find(model => model.value === props.modelValue) || models[0];
+});
 
 const selectModel = (value: string) => {
-  emit('update:modelValue', value)
-  isOpen.value = false
-}
+  emit("update:modelValue", value);
+  isOpen.value = false;
+};
 
 const toggleDropdown = () => {
-  isOpen.value = !isOpen.value
-}
+  isOpen.value = !isOpen.value;
+};
 
 // Close dropdown when clicking outside
 const closeDropdown = () => {
-  isOpen.value = false
-}
+  isOpen.value = false;
+};
 </script>
 
 <template>
   <div class="model-selector" @blur="closeDropdown" tabindex="0">
-    <button 
+    <button
       class="selector-button"
       @click="toggleDropdown"
       :class="{ active: isOpen }"
@@ -46,11 +50,20 @@ const closeDropdown = () => {
       <span class="selected-model">
         {{ selectedModel.label }}
       </span>
-      <svg class="chevron" :class="{ rotated: isOpen }" viewBox="0 0 20 20" fill="currentColor">
-        <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" />
+      <svg
+        class="chevron"
+        :class="{ rotated: isOpen }"
+        viewBox="0 0 20 20"
+        fill="currentColor"
+      >
+        <path
+          fill-rule="evenodd"
+          d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"
+          clip-rule="evenodd"
+        />
       </svg>
     </button>
-    
+
     <div v-if="isOpen" class="dropdown">
       <div
         v-for="model in models"
@@ -65,7 +78,11 @@ const closeDropdown = () => {
         </div>
         <div v-if="model.value === props.modelValue" class="check-icon">
           <svg viewBox="0 0 20 20" fill="currentColor">
-            <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" />
+            <path
+              fill-rule="evenodd"
+              d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
+              clip-rule="evenodd"
+            />
           </svg>
         </div>
       </div>

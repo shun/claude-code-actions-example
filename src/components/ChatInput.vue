@@ -1,54 +1,55 @@
 <script setup lang="ts">
-import { ref, nextTick } from 'vue'
+import { ref, nextTick } from "vue";
 
 const emit = defineEmits<{
-  'send-message': [content: string]
-}>()
+  "send-message": [content: string];
+}>();
 
-const message = ref('')
-const textarea = ref<HTMLTextAreaElement>()
-const isComposing = ref(false)
+const message = ref("");
+const textarea = ref<HTMLTextAreaElement>();
+const isComposing = ref(false);
 
 const sendMessage = () => {
   if (message.value.trim() && !isComposing.value) {
-    emit('send-message', message.value.trim())
-    message.value = ''
-    resetTextareaHeight()
+    emit("send-message", message.value.trim());
+    message.value = "";
+    resetTextareaHeight();
   }
-}
+};
 
 const handleKeydown = (event: KeyboardEvent) => {
-  if (event.key === 'Enter' && !event.shiftKey) {
-    event.preventDefault()
-    sendMessage()
+  if (event.key === "Enter" && !event.shiftKey) {
+    event.preventDefault();
+    sendMessage();
   }
-}
+};
 
 const handleInput = async () => {
-  await nextTick()
-  adjustTextareaHeight()
-}
+  await nextTick();
+  adjustTextareaHeight();
+};
 
 const adjustTextareaHeight = () => {
   if (textarea.value) {
-    textarea.value.style.height = 'auto'
-    textarea.value.style.height = Math.min(textarea.value.scrollHeight, 120) + 'px'
+    textarea.value.style.height = "auto";
+    textarea.value.style.height =
+      Math.min(textarea.value.scrollHeight, 120) + "px";
   }
-}
+};
 
 const resetTextareaHeight = () => {
   if (textarea.value) {
-    textarea.value.style.height = 'auto'
+    textarea.value.style.height = "auto";
   }
-}
+};
 
 const handleCompositionStart = () => {
-  isComposing.value = true
-}
+  isComposing.value = true;
+};
 
 const handleCompositionEnd = () => {
-  isComposing.value = false
-}
+  isComposing.value = false;
+};
 </script>
 
 <template>
@@ -65,13 +66,18 @@ const handleCompositionEnd = () => {
         @compositionstart="handleCompositionStart"
         @compositionend="handleCompositionEnd"
       ></textarea>
-      
+
       <button
         class="send-button"
         :disabled="!message.trim()"
         @click="sendMessage"
       >
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <svg
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+        >
           <line x1="22" y1="2" x2="11" y2="13"></line>
           <polygon points="22,2 15,22 11,13 2,9"></polygon>
         </svg>
@@ -154,7 +160,7 @@ const handleCompositionEnd = () => {
   .chat-input {
     padding: 0.75rem;
   }
-  
+
   .message-input {
     font-size: 16px; /* Prevents zoom on iOS */
   }
