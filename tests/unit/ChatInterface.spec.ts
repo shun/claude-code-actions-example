@@ -32,6 +32,25 @@ vi.mock("@/components/ModelSelector.vue", () => ({
   },
 }));
 
+vi.mock("@/components/SettingsModal.vue", () => ({
+  default: {
+    name: "SettingsModal",
+    props: ["isOpen"],
+    emits: ["update:isOpen", "settings-saved"],
+    template: '<div class="settings-modal-mock" v-if="isOpen">Settings Modal</div>',
+  },
+}));
+
+// Mock the Gemini API service
+vi.mock("@/services/geminiApi", () => ({
+  GeminiApiService: vi.fn().mockImplementation(() => ({
+    generateResponse: vi.fn().mockResolvedValue({
+      success: true,
+      content: "Mocked Gemini response",
+    }),
+  })),
+}));
+
 describe("ChatInterface", () => {
   let wrapper: VueWrapper<any>;
 
@@ -51,6 +70,9 @@ describe("ChatInterface", () => {
       true
     );
     expect(wrapper.findComponent({ name: "ChatInput" }).exists()).toBe(true);
+    expect(wrapper.findComponent({ name: "SettingsModal" }).exists()).toBe(
+      true
+    );
   });
 
   it("starts with empty messages", () => {
@@ -120,5 +142,41 @@ describe("ChatInterface", () => {
 
     // Should not add any messages
     expect(wrapper.findAllComponents({ name: "ChatMessage" })).toHaveLength(0);
+  });
+
+  it("renders settings button", () => {
+    expect(wrapper.find(".settings-btn").exists()).toBe(true);
+  });
+
+  it("opens settings modal when settings button is clicked", async () => {
+    const settingsBtn = wrapper.find(".settings-btn");
+    
+    await settingsBtn.trigger("click");
+    
+    // Check if settings modal is shown
+    const settingsModal = wrapper.findComponent({ name: "SettingsModal" });
+    expect(settingsModal.props("isOpen")).toBe(true);
+  });
+
+  it("displays error banner when there is an error", async () => {
+    // Set an error message
+    await wrapper.setData({ errorMessage: "Test error message" });
+    
+    const errorBanner = wrapper.find(".error-banner");
+    expect(errorBanner.exists()).toBe(true);
+    expect(errorBanner.text()).toBe("Test error message");
+  });
+
+  it("clears error message when chat is cleared", async () => {
+    // Set an error message first
+    await wrapper.setData({ errorMessage: "Test error" });
+    expect(wrapper.find(".error-banner").exists()).toBe(true);
+    
+    // Click clear button
+    await wrapper.find(".clear-btn").trigger("click");
+    
+    // Error should be cleared
+    await wrapper.vm.$nextTick();
+    expect(wrapper.find(".error-banner").exists()).toBe(false);
   });
 });
